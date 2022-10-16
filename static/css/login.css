@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Nabla&family=Rubik+Mono+One&display=swap');
+
+.divider:after,
+.divider:before {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #eee;
+}
+
+.titlelogin{
+    font-family: 'Rubik Mono One', sans-serif;
+}
