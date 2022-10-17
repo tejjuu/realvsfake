@@ -1,6 +1,21 @@
 {% extends "Base.html" %}
 {% block title %}Upload By Url{% endblock %}
 
+{% block navi %}
+<li class="nav-item">
+  <a href="/home" class="nav-link"><span data-hover="Home">Home</span></a>
+</li>
+<li class="nav-item">
+  <a href="/uploadurl" class="nav-link"><span data-hover="uploadurl">Detect By Url</span></a>
+</li>
+<li class="nav-item">
+  <a href="/uploadimage" class="nav-link"><span data-hover="uploadimage">Detect By Image</span></a>
+</li>
+<li class="nav-item">
+  <a href="/about" class="nav-link"><span data-hover="About">About</span></a>
+</li>
+{% endblock %}
+
 {% block content %} 
 <section class="Upload image">
     <div class="container py-5 mt-5 h-100">

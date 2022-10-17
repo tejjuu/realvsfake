@@ -1,6 +1,12 @@
 {% extends "Base.html" %}
 {% block title %}Register{% endblock %}
 
+{% block navi %}
+<li class="nav-item">
+  <a href="/login" class="nav-link"><span data-hover="About">Login</span></a>
+</li>
+{% endblock %}
+
 {% block content %} 
 <section class="login">
     <div class="container py-5 mt-5 h-100">

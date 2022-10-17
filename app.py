@@ -39,10 +39,11 @@ model = load_model('model.h5')
 # def allowed_file(filename):
 #     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route("/")
+@app.route("/home")
 def home():
     return render_template("Home.html")
 
+@app.route("/")
 @app.route("/login" , methods=['GET','POST'])
 def login():
     emailid=request.form.get("email")
@@ -58,6 +59,12 @@ def register():
         mobilenumber=request.form.get("phonenumber")
         password1=request.form.get("password")
         password2=request.form.get("confirmpassword")
+
+        pemail = collection.find_one({"email": emailid})
+        if pemail:
+            message = 'Email already exist in database , please try to login!'
+            return render_template('register.html', message=message)
+        
         if password1 != password2:
                 message = 'Passwords should match!'
                 return render_template('register.html', message=message)
