@@ -11,16 +11,18 @@ import random
 import smtplib
 import bcrypt
 from pymongo import MongoClient
-import os 
+import os
+import math 
 import urllib.request
+import tensorflow
 from tensorflow.keras.models import load_model
 import urllib.request
 
 
-connection_string="mongodb+srv://karthik:karthik@cluster0.rctxccl.mongodb.net/?retryWrites=true&w=majority"
+connection_string="mongodb+srv://teju4:teju@cluster0.7u4roay.mongodb.net/?retryWrites=true&w=majority"
 client=MongoClient(connection_string)
-dataSeesaws=client.Seesaws
-collection=dataSeesaws.Users
+dataSeesaws=client.bereal
+collection=dataSeesaws.users
 
 
 app = Flask(__name__)
@@ -60,14 +62,22 @@ def register():
                 message = 'Passwords should match!'
                 return render_template('register.html', message=message)
         else:
-            hashed = bcrypt.hashpw(password1.encode('utf-8'), bcrypt.gensalt())
-            user_input = {'firstName': firstname, 'lastName': lastname, 'email': emailid , 'Mobile': mobilenumber , 'Password': hashed}
+           # hashed = bcrypt.hashpw(password1.encode('utf-8'), bcrypt.gensalt())
+            user_input = {'firstName': firstname, 'lastName': lastname, 'email': emailid , 'Mobile': mobilenumber , 'Password': password1}
             collection.insert_one(user_input)
             return render_template('VerifyMobile.html')
     return render_template("Register.html")
 
 def generateotp():
     return random.randrange(100000,999999)
+
+def generateotp_email():
+    digits = "0123456789"
+    OTP = ""
+    for i in range(6):
+        OTP += digits[math.floor(random.random() * 10)]
+    otp = OTP #+ " is your OTP"
+    return otp
 
 def getotpapi(number):
     account_sid="AC716e7536612de6dbc5a9f4105a82639d"
@@ -123,8 +133,8 @@ def getotpapi_email(emailid):
 
     s.login("seesawsofficial@gmail.com", "pinpekzdqvrcscqq")
 
-    otp=generateotp()
-    msg=otp + " is your OTP"
+    otp=generateotp_email()
+    msg=otp 
 
     s.sendmail('&&&&&&&&&&&&&&&&', emailid, msg)
     session['response']=str(otp)
@@ -192,12 +202,20 @@ def model_pred(image):
     print("Image_shape", image.shape)
     print("Image_dimension", image.ndim)
     # Returns Probability:
-    prediction = model.predict(image)[0]
-    ans=np.argmax(prediction)
+    print(model.predict(image))
+    prediction = model.predict(image)
+    ans=np.argmax(prediction,axis=1)
+    print(prediction)
+    Prediction= tensorflow.math.sigmoid(prediction)
+    print()
+    conf=Prediction[0][0].numpy()
+    # ans=np.argmax(Prediction)
+    # conf=Prediction[ans][0]
+    
     # Returns class:
     # prediction = model.predict_classes(image)[0]
-    print(prediction)
-    return (ans)
+    # print(prediction)
+    return (ans,round(conf,3))
 
 @app.route("/predict",methods=['POST','GET'])
 def predictimage():
@@ -215,10 +233,10 @@ def predictimage():
         image = image_preprocessor(filelocation)
 
         # Perfroming Prediction
-        pred = model_pred(image)
+        pred,conf = model_pred(image)
 
         print(pred)
-        return render_template('predict.html', name=filename, result=pred)
+        return render_template('predict.html', name=filename, result=pred,conf=conf)
 
 def download_image(url, file_path, file_name):
     full_path = file_path + file_name + '.jpg'
